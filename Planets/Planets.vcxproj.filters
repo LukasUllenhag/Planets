@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Source\Benchmark\Data\All.h" />
+    <ClInclude Include="Source\Benchmark\Data\SessionData.h" />
+    <ClInclude Include="Source\Benchmark\Data\ThreadData.h" />
+    <ClInclude Include="Source\Benchmark\Data\TimingData.h" />
+    <ClInclude Include="Source\Benchmark\BenchmarkEvent.h" />
+    <ClInclude Include="Source\Benchmark\BenchmarkEventFactory.h" />
+    <ClInclude Include="Source\Benchmark\BenchmarkMacros.h" />
+    <ClInclude Include="Source\Benchmark\BenchmarkManager.h" />
+    <ClInclude Include="Source\Benchmark\BenchmarkSession.h" />
+    <ClInclude Include="Source\Benchmark\BenchmarkTimer.h" />
+    <ClInclude Include="Source\Console\ConsoleInput.h" />
+    <ClInclude Include="Source\Console\ConsoleInputMutex.h" />
+    <ClInclude Include="Source\Console\ErrorLog.h" />
+    <ClInclude Include="Source\Console\Log.h" />
+    <ClInclude Include="Source\Console\LogMutex.h" />
+    <ClInclude Include="Source\Iterator\Container\ContainerBase.h" />
+    <ClInclude Include="Source\Iterator\Container\ContainerDebugBase.h" />
+    <ClInclude Include="Source\Iterator\Container\ContainerDebugInfo.h" />
+    <ClInclude Include="Source\Iterator\Container\ContainerReleaseBase.h" />
+    <ClInclude Include="Source\Iterator\ConstRandomAccessIterator.h" />
+    <ClInclude Include="Source\Iterator\ConstRandomAccessIteratorDebugBase.h" />
+    <ClInclude Include="Source\Iterator\ConstRandomAccessIteratorReleaseBase.h" />
+    <ClInclude Include="Source\Iterator\IteratorMacro.h" />
+    <ClInclude Include="Source\Iterator\RandomAccessIterator.h" />
+    <ClInclude Include="Source\Mathematics\Matrix\Matrix.h" />
+    <ClInclude Include="Source\Mathematics\Matrix\MatrixColumn.h" />
+    <ClInclude Include="Source\Mathematics\Vector\RawVector.h" />
+    <ClInclude Include="Source\Mathematics\Vector\Vector.h" />
+    <ClInclude Include="Source\Mathematics\Algorithms.h" />
+    <ClInclude Include="Source\Noise\PerlinNoise.h" />
+    <ClInclude Include="Source\Noise\PermutationTable.h" />
+    <ClInclude Include="Source\Noise\RandomValueTable.h" />
+    <ClInclude Include="Source\Noise\ValueNoise.h" />
+    <ClInclude Include="Source\Rendering\Camera.h" />
+    <ClInclude Include="Source\Rendering\GlMacro.h" />
+    <ClInclude Include="Source\Rendering\PngLoader.h" />
+    <ClInclude Include="Source\Rendering\PostProcessor.h" />
+    <ClInclude Include="Source\Rendering\Program.h" />
+    <ClInclude Include="Source\Rendering\Shader.h" />
+    <ClInclude Include="Source\Rendering\Texture.h" />
+    <ClInclude Include="Source\Rendering\Vertex.h" />
+    <ClInclude Include="Source\Window\Window.h" />
+    <ClInclude Include="Source\Window\WindowAccessSpecifier.h" />
+    <ClInclude Include="Source\CustomConcepts.h" />
+    <ClInclude Include="Source\CustomException.h" />
+    <ClInclude Include="Source\DynamicVariableManager.h" />
+    <ClInclude Include="Source\Game.h" />
+    <ClInclude Include="Source\Keyboard.h" />
+    <ClInclude Include="Source\PrecompiledHeader.h" />
+    <ClInclude Include="Source\Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Benchmark\Data\SessionData.cpp" />
+    <ClCompile Include="Source\Benchmark\Data\ThreadData.cpp" />
+    <ClCompile Include="Source\Benchmark\Data\TimingData.cpp" />
+    <ClCompile Include="Source\Benchmark\BenchmarkEvent.cpp" />
+    <ClCompile Include="Source\Benchmark\BenchmarkEventFactory.cpp" />
+    <ClCompile Include="Source\Benchmark\BenchmarkManager.cpp" />
+    <ClCompile Include="Source\Benchmark\BenchmarkSession.cpp" />
+    <ClCompile Include="Source\Rendering\Camera.cpp" />
+    <ClCompile Include="Source\Rendering\PngLoader.cpp" />
+    <ClCompile Include="Source\Rendering\PostProcessor.cpp" />
+    <ClCompile Include="Source\Rendering\Program.cpp" />
+    <ClCompile Include="Source\Rendering\Shader.cpp" />
+    <ClCompile Include="Source\Rendering\Texture.cpp" />
+    <ClCompile Include="Source\Window\Window.cpp" />
+    <ClCompile Include="Source\Window\WindowAccessSpecifier.cpp" />
+    <ClCompile Include="Source\CustomException.cpp" />
+    <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\Keyboard.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\PrecompiledHeader.cpp" />
+  </ItemGroup>
+</Project>
