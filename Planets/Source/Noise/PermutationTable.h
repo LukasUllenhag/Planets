@@ -22,7 +22,7 @@ public:
 		assert(index >= 0 && index < Size());
 		return mPermutationTable[index];
 	}
-	T* GetPointerToData()
+	const T* GetPointerToData() const
 	{
 		return mPermutationTable;
 	}
@@ -39,4 +39,4 @@ private:
 };
 
 template<int N>
-using PermutationTable = BasicPermutationTable<size_t, N>;
+using PermutationTable = BasicPermutationTable<unsigned char, N>;
