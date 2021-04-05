@@ -74,10 +74,26 @@ public:
 		}
 	}
 
-
 	// Thread-safe
 	// The only way to read the variables from the outside is through this 
-	// method, which is thread-safe
+	// method, "GetVariables" and "UseVariables", which are all thread-safe
+	T Get(int index)
+	{
+		std::lock_guard lockGuard(mMutex);
+		assert(index >= 0 && index < mVariables.size());
+		return mVariables[index];
+	}
+	// Thread-safe
+	// The only way to read the variables from the outside is through this 
+	// method, "Get" and "UseVariables", which are all thread-safe
+	std::vector<T> GetVariables()
+	{
+		std::lock_guard lockGuard(mMutex);
+		return mVariables;
+	}
+	// Thread-safe
+	// The only way to read the variables from the outside is through this 
+	// method, "Get" and "GetVariables", which are all thread-safe
 	void UseVariables(std::function<void(const T*, size_t)> function)
 	{
 		std::lock_guard lockGuard(mMutex);
@@ -92,16 +108,16 @@ public:
 	// Thread-safe
 	// Updates the value of the current variable to update (if there is one),
 	// through keyboard input
-	void UpdateValueKeyboard(float deltaTime)
+	bool UpdateValueKeyboard(float deltaTime)
 	{
 		std::lock_guard lockGuard(mMutex);
+		bool valueIsUpdated = false;
 
 		// Only proceed if there is a variable the user wants to update
 		if (mVariableToUpdate)
 		{
 			UpdateUpdateSpeedKeyboard(deltaTime);
 
-			bool valueIsUpdated = false;
 			if (Keyboard::KeyIsPressed(GLFW_KEY_LEFT))
 			{
 				*mVariableToUpdate -= deltaTime * mUpdateSpeed;
@@ -119,6 +135,7 @@ public:
 			}
 		}
 
+		return valueIsUpdated;
 	}
 private:
 	// Updates the update speed through keyboard input. The method does not
