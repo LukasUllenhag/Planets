@@ -2,6 +2,7 @@
 #include "../Algorithms.h"
 #include "Source/Window/Window.h"
 #include "MatrixColumn.h"
+#include <optional>
 
 namespace matrix
 {
@@ -110,6 +111,173 @@ public:
 		*this = (*this) * other;
 		return *this;
 	}
+
+	bool Invert()
+		requires(N == 4)
+	{
+		// This method is a slightly modified version
+		// of the function found here:
+		// https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
+
+		// If it turns out that the matrix is not invertible we do not want 
+		// to modify "this" matrix. We therefore, initially, store the inverted 
+		// matrix inside this local matrix instance.
+		BasicMatrix inverse;
+		T* invertedData = inverse.GetPointerToData();
+
+		// Until we are certain that the matrix is invertible
+		// we only want to read from "this" matrix
+		const T* data = GetPointerToData();
+
+		invertedData[0] = data[5] * data[10] * data[15] -
+			data[5] * data[11] * data[14] -
+			data[9] * data[6] * data[15] +
+			data[9] * data[7] * data[14] +
+			data[13] * data[6] * data[11] -
+			data[13] * data[7] * data[10];
+
+		invertedData[4] = -data[4] * data[10] * data[15] +
+			data[4] * data[11] * data[14] +
+			data[8] * data[6] * data[15] -
+			data[8] * data[7] * data[14] -
+			data[12] * data[6] * data[11] +
+			data[12] * data[7] * data[10];
+
+		invertedData[8] = data[4] * data[9] * data[15] -
+			data[4] * data[11] * data[13] -
+			data[8] * data[5] * data[15] +
+			data[8] * data[7] * data[13] +
+			data[12] * data[5] * data[11] -
+			data[12] * data[7] * data[9];
+
+		invertedData[12] = -data[4] * data[9] * data[14] +
+			data[4] * data[10] * data[13] +
+			data[8] * data[5] * data[14] -
+			data[8] * data[6] * data[13] -
+			data[12] * data[5] * data[10] +
+			data[12] * data[6] * data[9];
+
+		invertedData[1] = -data[1] * data[10] * data[15] +
+			data[1] * data[11] * data[14] +
+			data[9] * data[2] * data[15] -
+			data[9] * data[3] * data[14] -
+			data[13] * data[2] * data[11] +
+			data[13] * data[3] * data[10];
+
+		invertedData[5] = data[0] * data[10] * data[15] -
+			data[0] * data[11] * data[14] -
+			data[8] * data[2] * data[15] +
+			data[8] * data[3] * data[14] +
+			data[12] * data[2] * data[11] -
+			data[12] * data[3] * data[10];
+
+		invertedData[9] = -data[0] * data[9] * data[15] +
+			data[0] * data[11] * data[13] +
+			data[8] * data[1] * data[15] -
+			data[8] * data[3] * data[13] -
+			data[12] * data[1] * data[11] +
+			data[12] * data[3] * data[9];
+
+		invertedData[13] = data[0] * data[9] * data[14] -
+			data[0] * data[10] * data[13] -
+			data[8] * data[1] * data[14] +
+			data[8] * data[2] * data[13] +
+			data[12] * data[1] * data[10] -
+			data[12] * data[2] * data[9];
+
+		invertedData[2] = data[1] * data[6] * data[15] -
+			data[1] * data[7] * data[14] -
+			data[5] * data[2] * data[15] +
+			data[5] * data[3] * data[14] +
+			data[13] * data[2] * data[7] -
+			data[13] * data[3] * data[6];
+
+		invertedData[6] = -data[0] * data[6] * data[15] +
+			data[0] * data[7] * data[14] +
+			data[4] * data[2] * data[15] -
+			data[4] * data[3] * data[14] -
+			data[12] * data[2] * data[7] +
+			data[12] * data[3] * data[6];
+
+		invertedData[10] = data[0] * data[5] * data[15] -
+			data[0] * data[7] * data[13] -
+			data[4] * data[1] * data[15] +
+			data[4] * data[3] * data[13] +
+			data[12] * data[1] * data[7] -
+			data[12] * data[3] * data[5];
+
+		invertedData[14] = -data[0] * data[5] * data[14] +
+			data[0] * data[6] * data[13] +
+			data[4] * data[1] * data[14] -
+			data[4] * data[2] * data[13] -
+			data[12] * data[1] * data[6] +
+			data[12] * data[2] * data[5];
+
+		invertedData[3] = -data[1] * data[6] * data[11] +
+			data[1] * data[7] * data[10] +
+			data[5] * data[2] * data[11] -
+			data[5] * data[3] * data[10] -
+			data[9] * data[2] * data[7] +
+			data[9] * data[3] * data[6];
+
+		invertedData[7] = data[0] * data[6] * data[11] -
+			data[0] * data[7] * data[10] -
+			data[4] * data[2] * data[11] +
+			data[4] * data[3] * data[10] +
+			data[8] * data[2] * data[7] -
+			data[8] * data[3] * data[6];
+
+		invertedData[11] = -data[0] * data[5] * data[11] +
+			data[0] * data[7] * data[9] +
+			data[4] * data[1] * data[11] -
+			data[4] * data[3] * data[9] -
+			data[8] * data[1] * data[7] +
+			data[8] * data[3] * data[5];
+
+		invertedData[15] = data[0] * data[5] * data[10] -
+			data[0] * data[6] * data[9] -
+			data[4] * data[1] * data[10] +
+			data[4] * data[2] * data[9] +
+			data[8] * data[1] * data[6] -
+			data[8] * data[2] * data[5];
+
+		T determinant = 
+			data[0] * invertedData[0] + data[1] * invertedData[4] + 
+			data[2] * invertedData[8] + data[3] * invertedData[12];
+
+		if (determinant == (T)0)
+		{
+			// The matrix is not invertible, so we let
+			// the matrix remain unmodified and notify
+			// the outside of the failed inversion
+			return false;
+		}
+		
+		determinant = (T)1 / determinant;
+
+		for (int i = 0; i < 16; ++i)
+		{
+			invertedData[i] *= determinant;
+		}
+
+		// The determinant is not zero, so we know we successfully 
+		// inverted the matrix. Copy the inverted matrix into "this"
+		// matrix
+		*this = inverse;
+
+		// Let the outside know that we successfully inverted the matrix
+		return true;
+	}
+	std::optional<BasicMatrix> GetInverse() const
+		requires(N == 4)
+	{
+		BasicMatrix inverse = *this;
+		bool successfullyInverted = inverse.Invert();
+
+		// Return the inverse, only if we successfully inverted the matrix
+		return successfullyInverted ? inverse : std::optional<BasicMatrix>{ };
+	}
+
 private:
 	Column mColumns[N];
 };
