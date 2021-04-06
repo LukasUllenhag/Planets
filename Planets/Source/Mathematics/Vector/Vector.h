@@ -99,7 +99,8 @@ public:
 	[[nodiscard]] BasicVector GetNormalized()
 	{
 		BasicVector temporary = *this;
-		return temporary.Normalize();
+		temporary.Normalize();
+		return temporary;
 	}
 	[[nodiscard]] T Dot(const BasicVector& other) const
 	{
@@ -206,5 +207,10 @@ using Vector4i = BasicVector4<int>;
 
 namespace vector
 {
-	inline Vector3 up(0.0f, 1.0f, 0.0f);
+	const inline Vector3 up(0.0f, 1.0f, 0.0f);
+	const inline Vector3 down(0.0f, -1.0f, 0.0f);
+	const inline Vector3 left(-1.0f, 0.0f, 0.0f);
+	const inline Vector3 right(1.0f, 0.0f, 0.0f);
+	const inline Vector3 backward(0.0f, 0.0f, 1.0f);
+	const inline Vector3 forward(0.0f, 0.0f, -1.0f);
 }
