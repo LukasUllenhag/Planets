@@ -1,5 +1,5 @@
 #pragma once
-#include "Program.h"
+#include "PostProcessingEffect.h"
 
 class PostProcessor
 {
@@ -11,7 +11,7 @@ public:
 
 	// Renders "mRenderingFunction" with the post-processing effect: "effect"
 	void Render(const std::string& effect) const;
-	void AddEffect(const std::string& effectName);
+	void AddEffect(const std::string& effectName, PostProcessingEffect effect);
 private:
 	// Initializes "mTexture" and "mDepthTexture"
 	void InitializeTextures();
@@ -25,9 +25,10 @@ private:
 	// Renders the texture with the post-processing effect: "effect"
 	void RenderTextureWithEffect(const std::string& effect) const;
 private:
-	// We will apply the post-processing effect for the rendering inside "renderingFunction"
+	// We will apply the post-processing effect to the rendering that
+	// happens inside "mRenderingFunction"
 	std::function<void()> mRenderingFunction = []{};
-	std::unordered_map<std::string, Program> mNameToEffect;
+	std::unordered_map<std::string, PostProcessingEffect> mNameToEffect;
 
 	// The framebuffer enables us to render into the texture
 	GLuint mFramebuffer = 0;

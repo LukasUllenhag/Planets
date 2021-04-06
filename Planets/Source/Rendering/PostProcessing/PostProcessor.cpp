@@ -1,6 +1,5 @@
 #include "PostProcessor.h"
-#include "../Window/Window.h"
-#include "GlMacro.h"
+#include "Source/Window/Window.h"
 
 PostProcessor::PostProcessor(std::function<void()> renderingFunction)
 	:
@@ -27,12 +26,12 @@ void PostProcessor::Render(const std::string& effect) const
 	RenderTextureWithEffect(effect);
 }
 
-void PostProcessor::AddEffect(const std::string& effectName)
+void PostProcessor::AddEffect(const std::string& effectName, PostProcessingEffect effect)
 {
 	// Make sure that we have not added this effect already
 	assert(mNameToEffect.find(effectName) == mNameToEffect.end());
 
-	mNameToEffect.insert({ effectName, Program(effectName) });
+	mNameToEffect.insert({ effectName, std::move(effect) });
 }
 
 void PostProcessor::InitializeTextures()
@@ -72,10 +71,5 @@ void PostProcessor::RenderTextureWithEffect(const std::string& effect) const
 	// Make sure that the effect has been added
 	assert(mNameToEffect.find(effect) != mNameToEffect.end());
 
-	// Bind the effect
-	mNameToEffect.at(effect).Bind();
-	// Bind the texture
-	GL(glBindTextureUnit(0, mTexture));
-
-	GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
+	mNameToEffect.at(effect).Render(mTexture, mDepthTexture);
 }
