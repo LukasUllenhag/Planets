@@ -36,6 +36,8 @@ void Texture::Bind(GLuint unit) const
 
 void Texture::RevertImage(std::vector<unsigned char>& image, const int width, const int height) const
 {
+	std::vector<unsigned char> reversedImage = image;
+
 	// The width of the texture in bytes. Each pixel has a width of 4 bytes, 
 	// hence we multiply the width, in pixels, by 4.
 	const int byteWidth = width * 4;
@@ -48,12 +50,14 @@ void Texture::RevertImage(std::vector<unsigned char>& image, const int width, co
 	{
 		return &image.front() + (i++) * byteWidth;
 	});
-	
+
 	// Loop through the rows in reversed order
 	std::for_each(rows.rbegin(), rows.rend(),
-		[i = 0, &image, byteWidth](const unsigned char* row) mutable
+		[i = 0, &reversedImage, byteWidth](const unsigned char* row) mutable
 	{
 		// Copy each row back into the image, inverting the image along the y-axis
-		std::copy_n(row, byteWidth, image.begin() + (i++) * byteWidth);
+		std::copy_n(row, byteWidth, reversedImage.begin() + (i++) * byteWidth);
 	});
+
+	image = reversedImage;
 }
