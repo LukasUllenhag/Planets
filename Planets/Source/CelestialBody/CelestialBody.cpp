@@ -12,6 +12,12 @@ CelestialBody::CelestialBody(const std::shared_ptr<Program> renderingProgram,
 	mScale(scale),
 	mDynamicVariables(dynamicVariableManager)
 {
+	// The radius of the model needs to be equal to
+	// 1 for our calculations to work out. The only reason
+	// why this variable exists is because a variable name
+	// is often easier to read and understand than a raw value.
+	assert(mDimensions.MODEL_RADIUS == 1.0f);
+
 	if (!msInitializedTextures)
 	{
 		msInitializedTextures = true;
@@ -20,7 +26,7 @@ CelestialBody::CelestialBody(const std::shared_ptr<Program> renderingProgram,
 
 	mDimensions.sideLengthInCells = int(mDimensions.MODEL_DIAMETER / cellSideLength);
 	// Make sure that the side length is not 0
-	assert(mSideLengthInCells >= 1);
+	assert(mDimensions.sideLengthInCells >= 1);
 
 	mDimensions.cellSideLength = mDimensions.MODEL_DIAMETER / (float)mDimensions.sideLengthInCells;
 
@@ -458,10 +464,11 @@ void CelestialBody::UpdateShaderStorageBufferObject(const std::vector<CelestialV
 
 void CelestialBody::BindUniforms(const Camera& camera, const Matrix4& projectionMatrix) const
 {
-	Matrix4 cameraRotation = (Matrix4)matrix::GetRotation(-camera.GetXRotation(), -camera.GetYRotation(), 0.0f);
+	const Matrix4 viewRotation = 
+		(Matrix4)matrix::GetRotation(-camera.GetXRotation(), -camera.GetYRotation(), 0.0f);
 
 	GL(glUniform3fv(0, 1, camera.GetPosition().GetPointerToData()));
-	GL(glUniformMatrix4fv(1, 1, GL_FALSE, cameraRotation.GetPointerToData()));
+	GL(glUniformMatrix4fv(1, 1, GL_FALSE, viewRotation.GetPointerToData()));
 	GL(glUniformMatrix4fv(2, 1, GL_FALSE, projectionMatrix.GetPointerToData()));
 	GL(glUniform3fv(3, 1, mPosition.GetPointerToData()));
 	GL(glUniform1f(4, mScale));	
