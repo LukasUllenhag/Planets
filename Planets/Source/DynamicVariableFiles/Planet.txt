@@ -1,0 +1,25 @@
+nCraters 0
+nWantedCraterTextures 0
+maxCraterTextureRadius 1.2
+
+depth 0.194986
+steepness 0.00256377
+rimHeightShare 0.136197
+rimPosition 0.660325
+smoothness 0.0421903
+
+roughAmplitude 0
+roughFrequency 2
+fineAmplitude 0
+fineFrequency 20
+ridgedAmplitude 0
+ridgedFrequency 3
+ridgedOffset -0.867
+
+fractalFrequency 2.94109
+fractalAmplitude 0.0384412
+mountainFrequency 1.67425
+mountainAmplitude 0.5
+
+oceanFloorDepth 0.06
+oceanDepthMultiplier 4
