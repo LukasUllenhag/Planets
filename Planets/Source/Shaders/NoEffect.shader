@@ -15,11 +15,11 @@ void main()
 #Shader Fragment
 #version 450 core
 
-layout(binding = 0) uniform sampler2D sampler;
+layout(binding = 0) uniform sampler2D renderedSceneTexture;
 
 in vec2 uv;
 out vec4 colour;
 void main()
 {
-	colour = texture(sampler, uv);
+	colour = texture(renderedSceneTexture, uv);
 }
