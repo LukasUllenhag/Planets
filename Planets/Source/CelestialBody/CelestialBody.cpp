@@ -4,13 +4,13 @@
 
 CelestialBody::CelestialBody(const std::shared_ptr<Program> renderingProgram,
 	const std::shared_ptr<Program> terrainGeneratorProgram, const Vector3& position,
-	float scale, float cellSideLength, const std::string& dynamicVariableManager)
+	float scale, float cellSideLength, std::shared_ptr<DynamicVariableGroup<float>> variableGroup)
 	:
 	mRenderingProgram(renderingProgram),
 	mTerrainGeneratorProgram(terrainGeneratorProgram),
 	mPosition(position),
 	mScale(scale),
-	mDynamicVariables(dynamicVariableManager)
+	mVariableGroup(variableGroup)
 {
 	// The radius of the model needs to be equal to
 	// 1 for our calculations to work out. The only reason
@@ -74,7 +74,7 @@ void CelestialBody::Render(const Camera& camera, const Matrix4& projectionMatrix
 
 void CelestialBody::Update(float deltaTime)
 {
-	bool variablesChanged = mDynamicVariables.UpdateValueKeyboard(deltaTime);
+	bool variablesChanged = mVariableGroup->UpdateValueKeyboard(deltaTime);
 
 	if (variablesChanged)
 	{
@@ -310,7 +310,7 @@ void CelestialBody::RunTerrainGeneratorProgram(const size_t nVertices, const GLu
 	GL(glUniform1i(0, nCraters));
 	GL(glUniform1f(1, maxCraterTextureRadius));
 
-	std::vector<float> dynamicVariables = mDynamicVariables.GetVariables();
+	std::vector<float> dynamicVariables = mVariableGroup->GetVariables();
 	// Pass the dynamic variables (which contain additional parameters for
 	// generating the terrain of the celestial body) to the shader
 	GL(glUniform1fv(2, (GLsizei)dynamicVariables.size(), &dynamicVariables.front()));
@@ -324,8 +324,8 @@ void CelestialBody::RunTerrainGeneratorProgram(const size_t nVertices, const GLu
 
 void CelestialBody::UpdateVboVertices(std::vector<CelestialVertex> vertices)
 {
-	const int nCraters = (int)mDynamicVariables.Get(0);
-	const float maxCraterTextureRadius = mDynamicVariables.Get(2);
+	const int nCraters = (int)mVariableGroup->Get(0);
+	const float maxCraterTextureRadius = mVariableGroup->Get(2);
 	
 	// We update the shader storage buffer object, so that we are able
 	// to access the vertices from the terrain generator program
@@ -403,7 +403,7 @@ void CelestialBody::InitializeVbo()
 std::vector<CraterData> CelestialBody::GetUniformBufferData(const std::vector<CelestialVertex>& vertices,
 	const int nCraters, const float maxCraterTextureRadius)
 {
-	const int nWantedCraterTextures = (int)mDynamicVariables.Get(1);
+	const int nWantedCraterTextures = (int)mVariableGroup->Get(1);
 
 	std::vector<TightlyPackedVector3> craterPositions = GetCraterPositions(nCraters, vertices);
 	std::vector<float> randomValues = GetRandomCraterValues(nCraters);

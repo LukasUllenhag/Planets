@@ -4,7 +4,7 @@
 #include "../Mathematics/Matrix/Matrix.h"
 #include "../Rendering/Vertex/CelestialVertex.h"
 #include "../Rendering/Vertex/CelestialVertexGlsl.h"
-#include "../DynamicVariableManager.h"
+#include "../DynamicVariableGroup.h"
 #include "CelestialBodyTextures.h"
 
 struct CraterData
@@ -41,7 +41,7 @@ class CelestialBody
 public:
 	CelestialBody(const std::shared_ptr<Program> renderingProgram,
 		const std::shared_ptr<Program> terrainGeneratorProgram, const Vector3& position,
-		float scale, float cellSideLength, const std::string& dynamicVariableManager);
+		float scale, float cellSideLength, std::shared_ptr<DynamicVariableGroup<float>> variableGroup);
 	~CelestialBody();
 	void Render(const Camera& camera, const Matrix4& projectionMatrix) const;
 	void Update(float deltaTime);
@@ -121,7 +121,7 @@ private:
 
 	// Dynamically updateable variables with parameters 
 	// that decide the generation of the terrain
-	DynamicVariableManager<float> mDynamicVariables;
+	std::shared_ptr<DynamicVariableGroup<float>> mVariableGroup;
 
 	// Vertices that form the shape of a sphere with the
 	// radius of "mDimensions.MODEL_RADIUS"
