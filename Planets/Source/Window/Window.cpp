@@ -52,6 +52,9 @@ void Window::InitializeGLFW(const std::string& title)
         throw CREATE_CUSTOM_EXCEPTION("Failed to initialize GLFW");
     }
 
+    // The user should not be able to resize the window
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
     // Create the window 
     mGlfwWindow = glfwCreateWindow(mWidth, mHeight, title.c_str(), NULL, NULL);
     if (!mGlfwWindow)
