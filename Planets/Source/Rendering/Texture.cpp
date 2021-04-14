@@ -29,6 +29,23 @@ Texture::~Texture()
 	glDeleteTextures(1, &mTextureName);
 }
 
+Texture::Texture(Texture&& other) noexcept
+{
+	*this = std::forward<Texture&&>(other);
+}
+
+Texture& Texture::operator=(Texture&& other) noexcept
+{
+	assert(this != &other);
+	mTextureName = other.mTextureName;
+	mContainsGlTexture = other.mContainsGlTexture;
+
+	// Remove the resource from other
+	other.mContainsGlTexture = false;
+
+	return *this;
+}
+
 void Texture::Bind(GLuint unit) const
 {
 	GL(glBindTextureUnit(unit, mTextureName));
