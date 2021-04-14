@@ -37,20 +37,30 @@
     <ClInclude Include="Source\Rendering\Camera.h" />
     <ClInclude Include="Source\Rendering\GlMacro.h" />
     <ClInclude Include="Source\Rendering\PngLoader.h" />
-    <ClInclude Include="Source\Rendering\PostProcessor.h" />
     <ClInclude Include="Source\Rendering\Program.h" />
     <ClInclude Include="Source\Rendering\Shader.h" />
     <ClInclude Include="Source\Rendering\Texture.h" />
-    <ClInclude Include="Source\Rendering\Vertex.h" />
     <ClInclude Include="Source\Window\Window.h" />
     <ClInclude Include="Source\Window\WindowAccessSpecifier.h" />
     <ClInclude Include="Source\CustomConcepts.h" />
     <ClInclude Include="Source\CustomException.h" />
-    <ClInclude Include="Source\DynamicVariableManager.h" />
     <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\Keyboard.h" />
     <ClInclude Include="Source\PrecompiledHeader.h" />
     <ClInclude Include="Source\Timer.h" />
+    <ClInclude Include="Source\Rendering\Vertex\Vertex.h" />
+    <ClInclude Include="Source\Rendering\Vertex\VertexGlsl.h" />
+    <ClInclude Include="Source\CelestialBody\CelestialBody.h" />
+    <ClInclude Include="Source\CelestialBody\CelestialBodyTextures.h" />
+    <ClInclude Include="Source\Rendering\Vertex\CelestialVertex.h" />
+    <ClInclude Include="Source\Rendering\Vertex\CelestialVertexGlsl.h" />
+    <ClInclude Include="Source\Rendering\PostProcessing\PostProcessor.h" />
+    <ClInclude Include="Source\Rendering\PostProcessing\PostProcessingEffect.h" />
+    <ClInclude Include="Source\Mathematics\Vector\TightlyPacked\TightlyPackedVector4.h" />
+    <ClInclude Include="Source\Mathematics\Vector\TightlyPacked\TightlyPackedVector3.h" />
+    <ClInclude Include="Source\Mathematics\Vector\TightlyPacked\TightlyPackedVector2.h" />
+    <ClInclude Include="Source\DynamicVariableGroup.h" />
+    <ClInclude Include="Source\DynamicVariableManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Benchmark\Data\SessionData.cpp" />
@@ -62,7 +72,6 @@
     <ClCompile Include="Source\Benchmark\BenchmarkSession.cpp" />
     <ClCompile Include="Source\Rendering\Camera.cpp" />
     <ClCompile Include="Source\Rendering\PngLoader.cpp" />
-    <ClCompile Include="Source\Rendering\PostProcessor.cpp" />
     <ClCompile Include="Source\Rendering\Program.cpp" />
     <ClCompile Include="Source\Rendering\Shader.cpp" />
     <ClCompile Include="Source\Rendering\Texture.cpp" />
@@ -73,5 +82,22 @@
     <ClCompile Include="Source\Keyboard.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\PrecompiledHeader.cpp" />
+    <ClCompile Include="Source\CelestialBody\CelestialBody.cpp" />
+    <ClCompile Include="Source\CelestialBody\CelestialBodyTextures.cpp" />
+    <ClCompile Include="Source\Rendering\PostProcessing\PostProcessor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\Default.shader" />
+    <None Include="Source\Shaders\MoonColour.shader" />
+    <None Include="Source\Shaders\MoonTexture.shader" />
+    <None Include="Source\Shaders\NoEffect.shader" />
+    <None Include="Source\Shaders\OceanEffect.shader" />
+    <None Include="Source\Shaders\Planet.shader" />
+    <None Include="Source\Shaders\CelestialBodyGeneration.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Source\DynamicVariableFiles\Moon.txt" />
+    <Text Include="Source\DynamicVariableFiles\AsteroidMoon.txt" />
+    <Text Include="Source\DynamicVariableFiles\Planet.txt" />
   </ItemGroup>
 </Project>

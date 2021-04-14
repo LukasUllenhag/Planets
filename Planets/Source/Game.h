@@ -5,7 +5,9 @@
 #include "Rendering/Camera.h"
 #include "Mathematics/Matrix/Matrix.h"
 #include "Timer.h"
-#include "Rendering/PostProcessor.h"
+#include "Rendering/PostProcessing/PostProcessor.h"
+#include "CelestialBody/CelestialBody.h"
+#include "DynamicVariableManager.h"
 
 class Game
 {
@@ -40,4 +42,16 @@ private:
 
 	Matrix4 mProjectionMatrix;
 	PostProcessor mPostProcessor;
+
+	// Generates the terrain of the celestial body
+	std::shared_ptr<Program> mCelestialBodyGeneratorProgram;
+	std::shared_ptr<Program> mMoonTextureRenderingProgram;
+	std::shared_ptr<Program> mMoonColourRenderingProgram;
+	std::shared_ptr<Program> mPlanetRenderingProgram;
+	
+	DynamicVariableManager<float> mDynamicVariableManager;
+
+	CelestialBody mTexturedMoon;
+	CelestialBody mAsteroidMoon;
+	CelestialBody mPlanet;
 };
