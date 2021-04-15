@@ -435,12 +435,17 @@ GLuint CelestialBody::CreateUniformBufferObject(const std::vector<CelestialVerte
 	GLuint uniformBufferObject = 0;
 	GL(glCreateBuffers(1, &uniformBufferObject));
 
-	std::vector<CraterData> uniformBufferData = GetUniformBufferData(vertices, nCraters, maxCraterTextureRadius);
-	// All instances of "CraterData" are aligned the same way as a "vec4" is, hence
-	// we multiply by "4 * 4 * 2"
-	GL(glNamedBufferData(uniformBufferObject, uniformBufferData.size() * 4 * 4 * 2,
-		&uniformBufferData.front(), GL_STATIC_DRAW));
-
+	// Only calculate the crater data if craters should
+	// be generated
+	if (nCraters > 0)
+	{
+		std::vector<CraterData> uniformBufferData = GetUniformBufferData(vertices, nCraters, maxCraterTextureRadius);
+		// All instances of "CraterData" are aligned the same way as a "vec4" is, hence
+		// we multiply by "4 * 4 * 2"
+		GL(glNamedBufferData(uniformBufferObject, uniformBufferData.size() * 4 * 4 * 2,
+			&uniformBufferData.front(), GL_STATIC_DRAW));
+	}
+	
 	return uniformBufferObject;
 }
 
