@@ -103,7 +103,7 @@ Game::Game()
             GL(glUniformMatrix4fv(8, 1, GL_FALSE, viewRotationMatrix4.GetPointerToData()));
 
             // Make sure that the inversion succeeded
-            assert(viewRotationInverse);
+            assert(viewRotationInverseMatrix4);
             GL(glUniformMatrix4fv(9, 1, GL_FALSE, viewRotationInverseMatrix4->GetPointerToData()));
 
             // vvv Normal map rotation calculation vvv

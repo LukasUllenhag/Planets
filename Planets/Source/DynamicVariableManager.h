@@ -28,7 +28,7 @@ public:
 		std::lock_guard lockGuard(mMutex);
 
 		// Make sure that the group actually exists
-		assert(mNameToVariableGroup.find(dynamicVariableGroupName) != mNameToVariableGroup.end());
+		assert(mNameToVariableGroup.find(groupName) != mNameToVariableGroup.end());
 
 		return mNameToVariableGroup[groupName];
 	}
