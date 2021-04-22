@@ -6,6 +6,10 @@
 
 int main()
 {
+    // The status of the execution is 
+    // initially set to success
+    int executionStatus = EXIT_SUCCESS;
+
     #if ENABLE_BENCHMARKING
         // Using "std::optional" in order to defer the construction of "benchmarkSession"
         std::optional<benchmark::Session> benchmarkSession;
@@ -24,14 +28,23 @@ int main()
     catch (const CustomException& exception)
     {
         ERROR_LOG(exception.what());
+        // Update the execution status
+        // to signal failure
+        executionStatus = EXIT_FAILURE;
     }
     catch (const std::exception& exception)
     {
         ERROR_LOG(exception.what());
+        // Update the execution status
+        // to signal failure
+        executionStatus = EXIT_FAILURE;
     }
     catch (...)
     {
         ERROR_LOG("Unknown exception");
+        // Update the execution status
+        // to signal failure
+        executionStatus = EXIT_FAILURE;
     }
     
     try
@@ -41,15 +54,24 @@ int main()
     catch (const CustomException& exception)
     {
         ERROR_LOG(exception.what());
+        // Update the execution status
+        // to signal failure
+        executionStatus = EXIT_FAILURE;
     }
     catch (const std::exception& exception)
     {
         ERROR_LOG(exception.what());
+        // Update the execution status
+        // to signal failure
+        executionStatus = EXIT_FAILURE;
     }
     catch (...)
     {
         ERROR_LOG("Unknown exception");
+        // Update the execution status
+        // to signal failure
+        executionStatus = EXIT_FAILURE;
     }
 
-    return 0;
+    return executionStatus;
 }
