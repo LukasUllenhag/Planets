@@ -1,6 +1,7 @@
 #include "CelestialBodyTextures.h"
 #include "../Noise/PerlinNoise.h"
 #include "../Rendering/GlMacro.h"
+#include <fstream>
 
 CelestialBodyTextures::CelestialBodyTextures(const std::string& craterTexture, 
 	const std::string& normalMap, const std::string& secondNormalMap)
@@ -10,13 +11,28 @@ CelestialBodyTextures::CelestialBodyTextures(const std::string& craterTexture,
 	mSecondNormalMap(secondNormalMap)
 {
 	auto permutationTable = std::make_shared<PermutationTable<256>>();
-	PerlinNoise<2> perlinNoise(permutationTable);
+	InitializeAllGlTextures(*permutationTable);
+}
 
-	InitializePermutationMap(*permutationTable);
-	InitializeNormalInterpolation(perlinNoise);
-	InitializeTexture(perlinNoise);
-	InitializeCraterSampler();
-	InitializeDefaultSampler();
+CelestialBodyTextures::CelestialBodyTextures(const std::string& craterTexture, 
+	const std::string& normalMap, const std::string& secondNormalMap, 
+	const celestialbodytextures::GenerateTexturesFlag&)
+	:
+	mCraterTexture(craterTexture),
+	mNormalMap(normalMap),
+	mSecondNormalMap(secondNormalMap)
+{
+	auto permutationTable = std::make_shared<PermutationTable<256>>();
+
+	// Generate new data for the normal interpolation texture
+	// and the surface texture, before initializing the textures
+	// vvv
+	PerlinNoise<2> perlinNoise(permutationTable);
+	GenerateNormalInterpolationTexture(255, 255, perlinNoise);
+	GenerateSurfaceTexture(255, 255, perlinNoise);
+	// ^^^
+
+	InitializeAllGlTextures(*permutationTable);
 }
 
 CelestialBodyTextures::~CelestialBodyTextures()
@@ -66,7 +82,7 @@ void CelestialBodyTextures::BindDefaultSampler(GLuint location) const
 	GL(glBindSampler(location, mDefaultSampler));
 }
 
-void CelestialBodyTextures::InitializePermutationMap(const PermutationTable<256> & permutationTable)
+void CelestialBodyTextures::InitializePermutationMap(const PermutationTable<256>& permutationTable)
 {
 	// Pass in the permutation table as a one-dimensional texture
 	GL(glCreateTextures(GL_TEXTURE_1D, 1, &mPermutationMap));
@@ -75,22 +91,22 @@ void CelestialBodyTextures::InitializePermutationMap(const PermutationTable<256>
 		GL_UNSIGNED_BYTE, permutationTable.GetPointerToData()));
 }
 
-void CelestialBodyTextures::InitializeNormalInterpolation(const PerlinNoise<2>& perlinNoise)
+void CelestialBodyTextures::InitializeNormalInterpolation()
 {
-	const int width = 512;
-	const int height = 512;
-	auto pixels = GetNormalInterpolationPixels(width, height, perlinNoise);
+	int width = 0;
+	int height = 0;
+	auto pixels = GetNormalInterpolationPixels(width, height);
 
 	GL(glCreateTextures(GL_TEXTURE_2D, 1, &mNormalInterpolationTexture));
 	GL(glTextureStorage2D(mNormalInterpolationTexture, 1, GL_R32F, width, height));
 	GL(glTextureSubImage2D(mNormalInterpolationTexture, 0, 0, 0, width, height, GL_RED, GL_FLOAT, pixels.get()));
 }
 
-void CelestialBodyTextures::InitializeTexture(const PerlinNoise<2>& perlinNoise)
+void CelestialBodyTextures::InitializeTexture()
 {
-	const int width = 512;
-	const int height = 512;
-	auto pixels = GetPixels(width, height, perlinNoise);
+	int width = 0;
+	int height = 0;
+	auto pixels = GetSurfacePixels(width, height);
 
 	GL(glCreateTextures(GL_TEXTURE_2D, 1, &mTexture));
 	GL(glTextureStorage2D(mTexture, 1, GL_RGBA8, width, height));
@@ -117,6 +133,15 @@ void CelestialBodyTextures::InitializeDefaultSampler()
 	// The default behaviour for the texture wraps is "GL_REPEAT"
 	GL(glSamplerParameteri(mDefaultSampler, GL_TEXTURE_WRAP_S, GL_REPEAT));
 	GL(glSamplerParameteri(mDefaultSampler, GL_TEXTURE_WRAP_T, GL_REPEAT));
+}
+
+void CelestialBodyTextures::InitializeAllGlTextures(const PermutationTable<256>& permutationTable)
+{
+	InitializePermutationMap(permutationTable);
+	InitializeNormalInterpolation();
+	InitializeTexture();
+	InitializeCraterSampler();
+	InitializeDefaultSampler();
 }
 
 float CelestialBodyTextures::GetFractalPerlinNoise(const PerlinNoise<2>& perlinNoise, 
@@ -171,7 +196,7 @@ float CelestialBodyTextures::GetWarpedPerlinNoise(const PerlinNoise<2>& perlinNo
 			+ offset * warpAmount, nOctaves, frequency, amplitude);
 }
 
-std::unique_ptr<unsigned char[]> CelestialBodyTextures::GetPixels(int width, int height,
+void CelestialBodyTextures::GenerateSurfaceTexture(const int width, const int height,
 	const PerlinNoise<2>& perlinNoise) const
 {
 	// The size of a pixel, in bytes
@@ -202,11 +227,55 @@ std::unique_ptr<unsigned char[]> CelestialBodyTextures::GetPixels(int width, int
 		}
 	}
 
-	return pixels;
+	std::ofstream file;
+	file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+	try
+	{
+		// We want to discard the old content, hence "std::ios_base::trunc"
+		file.open(TEXTURE_PATH + SURFACE_TEXTURE_NAME + RAW_FILE_EXTENSION,
+			std::ios_base::binary | std::ios_base::trunc);
+		file << width << " " << height;
+		file.write(reinterpret_cast<const char*>(pixels.get()), width * height * pixelSize);
+	}
+	catch (std::ios_base::failure)
+	{
+		throw CREATE_CUSTOM_EXCEPTION("Failed to open or write to file: "
+			+ TEXTURE_PATH + SURFACE_TEXTURE_NAME + RAW_FILE_EXTENSION);
+	}
 }
 
-std::unique_ptr<float[]> CelestialBodyTextures::GetNormalInterpolationPixels(
-	int width, int height, const PerlinNoise<2>& perlinNoise) const
+std::unique_ptr<unsigned char[]> CelestialBodyTextures::GetSurfacePixels(int& width, int& height) const
+{
+	std::ifstream file;
+	file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+	try
+	{
+		file.open(TEXTURE_PATH + SURFACE_TEXTURE_NAME + RAW_FILE_EXTENSION,
+			std::ios_base::binary);
+
+		file >> width;
+		file >> height;
+
+		// The size of a pixel, in bytes
+		const int pixelSize = 4;
+		auto pixels = std::make_unique<unsigned char[]>(width * height * pixelSize);
+		file.read(reinterpret_cast<char*>(pixels.get()), width * height * pixelSize);
+
+		return pixels;
+	}
+	catch (std::ios_base::failure)
+	{
+		throw CREATE_CUSTOM_EXCEPTION("Failed to open or read from file: "
+			+ TEXTURE_PATH + SURFACE_TEXTURE_NAME + RAW_FILE_EXTENSION);
+	}
+
+	return std::unique_ptr<unsigned char[]>();
+}
+
+void CelestialBodyTextures::GenerateNormalInterpolationTexture(
+	const int width, const int height, const PerlinNoise<2>& perlinNoise) const
 {
 	auto pixels = std::make_unique<float[]>(width * height);
 
@@ -217,5 +286,48 @@ std::unique_ptr<float[]> CelestialBodyTextures::GetNormalInterpolationPixels(
 			pixels[y * width + x] = perlinNoise.Get(Vector2((float)x, (float)y) * 0.1f);
 		}
 	}
-	return pixels;
+	
+	std::ofstream file;
+	file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+	try
+	{
+		// We want to discard the old content, hence "std::ios_base::trunc"
+		file.open(TEXTURE_PATH + NORMAL_INTERPOLATION_TEXTURE_NAME + RAW_FILE_EXTENSION, 
+			std::ios_base::binary | std::ios_base::trunc);
+		file << width << " " << height;
+		file.write(reinterpret_cast<const char*>(pixels.get()), width * height * sizeof(float));
+	}
+	catch (std::ios_base::failure)
+	{
+		throw CREATE_CUSTOM_EXCEPTION("Failed to open or write to file: " 
+			+ TEXTURE_PATH + NORMAL_INTERPOLATION_TEXTURE_NAME + RAW_FILE_EXTENSION);
+	}
+}
+
+std::unique_ptr<float[]> CelestialBodyTextures::GetNormalInterpolationPixels(int& width, int& height) const
+{
+	std::ifstream file;
+	file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+	try
+	{
+		file.open(TEXTURE_PATH + NORMAL_INTERPOLATION_TEXTURE_NAME + RAW_FILE_EXTENSION, 
+			std::ios_base::binary);
+
+		file >> width;
+		file >> height;
+
+		auto pixels = std::make_unique<float[]>(width * height);
+		file.read(reinterpret_cast<char*>(pixels.get()), width * height * sizeof(float));
+		
+		return pixels;
+	}
+	catch (std::ios_base::failure)
+	{
+		throw CREATE_CUSTOM_EXCEPTION("Failed to open or read from file: " 
+			+ TEXTURE_PATH + NORMAL_INTERPOLATION_TEXTURE_NAME + RAW_FILE_EXTENSION);
+	}
+
+	return std::unique_ptr<float[]>();
 }
