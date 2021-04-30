@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 
 template<class T>
 class ConstRandomAccessIteratorDebugBase;
