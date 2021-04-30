@@ -4,7 +4,7 @@
 #include "BenchmarkManager.h"
 
 // Enables/disables all the benchmarking
-#define ENABLE_BENCHMARKING 1
+#define ENABLE_BENCHMARKING 0
 #define ALLOW_BENCHMARK_SAVING 1
 
 #define CONCATENATE(a, b) CONCATENATE_I(a, b)
