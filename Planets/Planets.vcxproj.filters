@@ -99,5 +99,21 @@
     <Text Include="Source\DynamicVariableFiles\Moon.txt" />
     <Text Include="Source\DynamicVariableFiles\AsteroidMoon.txt" />
     <Text Include="Source\DynamicVariableFiles\Planet.txt" />
+    <Text Include="Source\CMakeLists.txt" />
+    <Text Include="Source\Benchmark\CMakeLists.txt" />
+    <Text Include="Source\Benchmark\Data\CMakeLists.txt" />
+    <Text Include="Source\CelestialBody\CMakeLists.txt" />
+    <Text Include="Source\Console\CMakeLists.txt" />
+    <Text Include="Source\Iterator\CMakeLists.txt" />
+    <Text Include="Source\Iterator\Container\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\Matrix\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\Vector\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\Vector\TightlyPacked\CMakeLists.txt" />
+    <Text Include="Source\Noise\CMakeLists.txt" />
+    <Text Include="Source\Rendering\CMakeLists.txt" />
+    <Text Include="Source\Rendering\PostProcessing\CMakeLists.txt" />
+    <Text Include="Source\Rendering\Vertex\CMakeLists.txt" />
+    <Text Include="Source\Window\CMakeLists.txt" />
   </ItemGroup>
 </Project>

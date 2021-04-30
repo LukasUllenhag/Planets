@@ -119,9 +119,25 @@
     <None Include="Source\Shaders\Planet.shader" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Source\Benchmark\CMakeLists.txt" />
+    <Text Include="Source\Benchmark\Data\CMakeLists.txt" />
+    <Text Include="Source\CelestialBody\CMakeLists.txt" />
+    <Text Include="Source\CMakeLists.txt" />
+    <Text Include="Source\Console\CMakeLists.txt" />
     <Text Include="Source\DynamicVariableFiles\AsteroidMoon.txt" />
     <Text Include="Source\DynamicVariableFiles\Moon.txt" />
     <Text Include="Source\DynamicVariableFiles\Planet.txt" />
+    <Text Include="Source\Iterator\CMakeLists.txt" />
+    <Text Include="Source\Iterator\Container\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\Matrix\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\Vector\CMakeLists.txt" />
+    <Text Include="Source\Mathematics\Vector\TightlyPacked\CMakeLists.txt" />
+    <Text Include="Source\Noise\CMakeLists.txt" />
+    <Text Include="Source\Rendering\CMakeLists.txt" />
+    <Text Include="Source\Rendering\PostProcessing\CMakeLists.txt" />
+    <Text Include="Source\Rendering\Vertex\CMakeLists.txt" />
+    <Text Include="Source\Window\CMakeLists.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -243,7 +259,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;DEBUG;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Dependencies/GLFW/Include/;$(SolutionDir)Dependencies/GLEW/Include/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Dependencies/GLFW/Include/;$(SolutionDir)Dependencies/GLEW/Include/;$(SolutionDir)/Build/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Source/PrecompiledHeader.h</PrecompiledHeaderFile>
@@ -264,7 +280,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;RELEASE;NDEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Dependencies/GLFW/Include/;$(SolutionDir)Dependencies/GLEW/Include/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Dependencies/GLFW/Include/;$(SolutionDir)Dependencies/GLEW/Include/;$(SolutionDir)/Build/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Source/PrecompiledHeader.h</PrecompiledHeaderFile>

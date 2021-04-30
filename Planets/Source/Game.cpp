@@ -2,10 +2,12 @@
 #include "Benchmark/BenchmarkMacros.h"
 #include "Rendering/GlMacro.h"
 #include "Console/Log.h"
+#include "Configure.h"
 
+using namespace std::literals::string_literals;
 Game::Game()
     :
-    mWindow("Water", 1920, 1080),
+    mWindow("Planets"s + " " + VERSION_STRING, 1920, 1080),
     mKeyboard(mWindow),
     mProjectionMatrix(matrix::GetProjection(ConvertDegreesToRadians(60.0f), 0.1f, 200.0f)),
     mPostProcessor(std::bind(&Game::RenderWithPostProcessingEffect, this)),
