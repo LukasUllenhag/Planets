@@ -42,7 +42,7 @@ namespace benchmark
 		std::mutex mMutex;
 		std::unordered_map<int, std::string> mThreadIdToName;
 		SessionData mSessionData;
-		inline static const std::string FILE_PATH = "../Benchmarks/Benchmark.json";
-		inline static const std::string SAVE_FILE_PATH = "../Benchmarks/Saved/";
+		inline static const std::string FILE_PATH = "Benchmarks/Benchmark.json";
+		inline static const std::string SAVE_FILE_PATH = "Benchmarks/Saved/";
 	};
 }
