@@ -1,5 +1,6 @@
 Binaries/
 .vs/
+*.vcxproj.user
 
 # vvv CMake vvv
 CMakeLists.txt.user
