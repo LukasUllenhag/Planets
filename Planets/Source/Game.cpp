@@ -7,7 +7,7 @@
 using namespace std::literals::string_literals;
 Game::Game()
     :
-    mWindow("Planets"s + " " + VERSION_STRING, 1920, 1080),
+    mWindow("Planets"s + " " + VERSION_STRING, 640, 480),
     mKeyboard(mWindow),
     mProjectionMatrix(matrix::GetProjection(ConvertDegreesToRadians(60.0f), 0.1f, 200.0f)),
     mPostProcessor(std::bind(&Game::RenderWithPostProcessingEffect, this)),
