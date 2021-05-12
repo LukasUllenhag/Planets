@@ -33,6 +33,7 @@ CelestialBody::CelestialBody(const std::shared_ptr<Program> renderingProgram,
 	// The shader storage buffer object needs to be initialized
 	// before we initialize the vbo
 	InitializeShaderStorageBufferObject();
+	InitializeUniformBufferObject();
 
 	// The vbo needs to be initialized
 	// before we initialize the vao
@@ -48,6 +49,7 @@ CelestialBody::~CelestialBody()
 	glDeleteVertexArrays(1, &mVao);
 	glDeleteBuffers(1, &mVbo);
 	glDeleteBuffers(1, &mShaderStorageBufferObject);
+	glDeleteBuffers(1, &mUniformBufferObject);
 }
 
 void CelestialBody::Render(const Camera& camera, const Matrix4& projectionMatrix) const
@@ -291,8 +293,8 @@ std::vector<bool> CelestialBody::GetCraterTextureBools(
 	return textureBools;
 }
 
-void CelestialBody::RunTerrainGeneratorProgram(const size_t nVertices, const GLuint uniformBufferObject,
-	const int nCraters, const float maxCraterTextureRadius)
+void CelestialBody::RunTerrainGeneratorProgram(const size_t nVertices,
+const int nCraters, const float maxCraterTextureRadius)
 {
 	mTerrainGeneratorProgram->Bind();
 
@@ -305,7 +307,7 @@ void CelestialBody::RunTerrainGeneratorProgram(const size_t nVertices, const GLu
 
 	// The uniform buffer object contains the crater data that is needed for generating
 	// the craters
-	GL(glBindBufferBase(GL_UNIFORM_BUFFER, 2, uniformBufferObject));
+	GL(glBindBufferBase(GL_UNIFORM_BUFFER, 2, mUniformBufferObject));
 
 	GL(glUniform1i(0, nCraters));
 	GL(glUniform1f(1, maxCraterTextureRadius));
@@ -331,13 +333,15 @@ void CelestialBody::UpdateVboVertices(std::vector<CelestialVertex> vertices)
 	// to access the vertices from the terrain generator program
 	UpdateShaderStorageBufferObject(vertices);
 
-	GLuint uniformBufferObject =
-		CreateUniformBufferObject(vertices, nCraters, maxCraterTextureRadius);
-
+	// If craters should be generated, update the uniform buffer object with new crater data
+	if (nCraters > 0)
+	{
+		UpdateUniformBufferObject(vertices, nCraters, maxCraterTextureRadius);
+	}
+	
 	// Update the vertices inside the shader storage buffer,
 	// by running the terrain generator program
-	RunTerrainGeneratorProgram(vertices.size(),
-		uniformBufferObject, nCraters, maxCraterTextureRadius);
+	RunTerrainGeneratorProgram(vertices.size(), nCraters, maxCraterTextureRadius);
 
 	// Wait for the vertices inside the shader storage buffer to 
 	// get updated
@@ -360,9 +364,6 @@ void CelestialBody::UpdateVboVertices(std::vector<CelestialVertex> vertices)
 
 	// Finally, update the vbo with the newly updated vertices
 	GL(glNamedBufferData(mVbo, sizeof(CelestialVertex) * vertices.size(), &vertices.front(), GL_STATIC_DRAW));
-
-	// We have updated the vertices and do not need the uniform buffer anymore
-	GL(glDeleteBuffers(1, &uniformBufferObject));
 }
 
 void CelestialBody::InitializeVao()
@@ -390,6 +391,17 @@ void CelestialBody::InitializeShaderStorageBufferObject()
 	GL(glCreateBuffers(1, &mShaderStorageBufferObject));
 }
 
+void CelestialBody::InitializeUniformBufferObject()
+{
+	GL(glCreateBuffers(1, &mUniformBufferObject));
+
+	// The buffer has to be able to hold "MAX_CRATER_COUNT" amount of "CraterData" instances.
+	// Each "CraterData" instance is aligned at a multiple of 2 * the size of a "vec4", hence
+	// we multiply by "4 * 4 * 2".
+	GL(glNamedBufferData(mUniformBufferObject, MAX_CRATER_COUNT * 4 * 4 * 2,
+		NULL, GL_STATIC_DRAW));
+}
+
 void CelestialBody::InitializeVbo()
 {
 	GL(glCreateBuffers(1, &mVbo));
@@ -400,7 +412,7 @@ void CelestialBody::InitializeVbo()
 	UpdateVboVertices(mSphereVertices);
 }
 
-std::vector<CraterData> CelestialBody::GetUniformBufferData(const std::vector<CelestialVertex>& vertices,
+void CelestialBody::UpdateUniformBufferObject(const std::vector<CelestialVertex>& vertices,
 	const int nCraters, const float maxCraterTextureRadius)
 {
 	const int nWantedCraterTextures = (int)mVariableGroup->Get(1);
@@ -426,27 +438,10 @@ std::vector<CraterData> CelestialBody::GetUniformBufferData(const std::vector<Ce
 		craterData.hasTexture = hasTextureBools[i];
 	}
 
-	return uniformBufferData;
-}
-
-GLuint CelestialBody::CreateUniformBufferObject(const std::vector<CelestialVertex>& vertices,
-	const int nCraters, const float maxCraterTextureRadius)
-{
-	GLuint uniformBufferObject = 0;
-	GL(glCreateBuffers(1, &uniformBufferObject));
-
-	// Only calculate the crater data if craters should
-	// be generated
-	if (nCraters > 0)
-	{
-		std::vector<CraterData> uniformBufferData = GetUniformBufferData(vertices, nCraters, maxCraterTextureRadius);
-		// All instances of "CraterData" are aligned the same way as a "vec4" is, hence
-		// we multiply by "4 * 4 * 2"
-		GL(glNamedBufferData(uniformBufferObject, uniformBufferData.size() * 4 * 4 * 2,
-			&uniformBufferData.front(), GL_STATIC_DRAW));
-	}
-	
-	return uniformBufferObject;
+	// Each "CraterData" instance is aligned at a multiple of 2 * the size of a "vec4", hence
+	// we multiply by "4 * 4 * 2"
+	GL(glNamedBufferData(mUniformBufferObject, uniformBufferData.size() * 4 * 4 * 2,
+		&uniformBufferData.front(), GL_STATIC_DRAW));
 }
 
 void CelestialBody::UpdateShaderStorageBufferObject(const std::vector<CelestialVertex>& vertices) const

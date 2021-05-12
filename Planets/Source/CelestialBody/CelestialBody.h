@@ -64,8 +64,7 @@ private:
 
 	// Runs the terrain generator program, a compute shader, which will
 	// generate the terrain of the vertices inside the shader storage buffer
-	void RunTerrainGeneratorProgram(size_t nVertices, GLuint uniformBufferObject,
-		int nCraters, float maxCraterTextureRadius);
+	void RunTerrainGeneratorProgram(size_t nVertices, int nCraters, float maxCraterTextureRadius);
 
 	// Will run the terrain generator program and update the vertices inside
 	// the vbo, which will affect the rendered celestial body. "mSphereVertices"
@@ -74,6 +73,7 @@ private:
 
 	void InitializeVao();
 	void InitializeShaderStorageBufferObject();
+	void InitializeUniformBufferObject();
 	void InitializeVbo();
 
 	// The following three methods generate crater data that will get passed to
@@ -85,10 +85,8 @@ private:
 		const std::vector<TightlyPackedVector3>& craterPositions, int nWantedCraterTextures,
 		float maxCraterTextureRadius) const;
 
-	// Generates the crater data, with the help of the three above methods
-	std::vector<CraterData> GetUniformBufferData(const std::vector<CelestialVertex>& vertices,
-		int nCraters, float maxCraterTextureRadius);
-	[[nodiscard]] GLuint CreateUniformBufferObject(const std::vector<CelestialVertex>& vertices,
+	// Updates the uniform buffer object, with the data generated from the three above methods
+	void UpdateUniformBufferObject(const std::vector<CelestialVertex>& vertices,
 		int nCraters, float maxCraterTextureRadius);
 
 	// Updates the shader storage buffer object with the passed in vertices
@@ -115,6 +113,7 @@ private:
 	GLuint mVao = 0;
 	GLuint mVbo = 0;
 	GLuint mShaderStorageBufferObject = 0;
+	GLuint mUniformBufferObject = 0;
 
 	Vector3 mPosition;
 	float mScale = 0.0f;
@@ -129,4 +128,6 @@ private:
 
 	// The dimensions that decide the positions of the model's vertices
 	CelestialBodyDimensions mDimensions;
+
+	static constexpr int MAX_CRATER_COUNT = 1024;
 };
