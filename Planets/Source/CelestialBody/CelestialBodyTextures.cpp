@@ -40,7 +40,6 @@ CelestialBodyTextures::~CelestialBodyTextures()
 	// We do not want to throw an exception inside a destructor. 
 	// Hence, we do not use the macro "GL".
 	glDeleteTextures(1, &mTexture);
-	glDeleteTextures(1, &mPermutationMap);
 	glDeleteTextures(1, &mNormalInterpolationTexture);
 	glDeleteSamplers(1, &mCraterSampler);
 	glDeleteSamplers(1, &mDefaultSampler);
@@ -62,11 +61,6 @@ void CelestialBodyTextures::BindNormalInterpolation(GLuint location) const
 	GL(glBindTextureUnit(location, mNormalInterpolationTexture));
 }
 
-void CelestialBodyTextures::BindPermutationMap(GLuint location) const
-{
-	GL(glBindTextureUnit(location, mPermutationMap));
-}
-
 void CelestialBodyTextures::BindCraterTexture(GLuint location) const
 {
 	mCraterTexture.Bind(location);
@@ -80,15 +74,6 @@ void CelestialBodyTextures::BindCraterSampler(GLuint location) const
 void CelestialBodyTextures::BindDefaultSampler(GLuint location) const
 {
 	GL(glBindSampler(location, mDefaultSampler));
-}
-
-void CelestialBodyTextures::InitializePermutationMap(const PermutationTable<256>& permutationTable)
-{
-	// Pass in the permutation table as a one-dimensional texture
-	GL(glCreateTextures(GL_TEXTURE_1D, 1, &mPermutationMap));
-	GL(glTextureStorage1D(mPermutationMap, 1, GL_R8UI, (GLsizei)permutationTable.Size()));
-	GL(glTextureSubImage1D(mPermutationMap, 0, 0, (GLsizei)permutationTable.Size(), GL_RED_INTEGER,
-		GL_UNSIGNED_BYTE, permutationTable.GetPointerToData()));
 }
 
 void CelestialBodyTextures::InitializeNormalInterpolation()
@@ -137,7 +122,6 @@ void CelestialBodyTextures::InitializeDefaultSampler()
 
 void CelestialBodyTextures::InitializeAllGlTextures(const PermutationTable<256>& permutationTable)
 {
-	InitializePermutationMap(permutationTable);
 	InitializeNormalInterpolation();
 	InitializeTexture();
 	InitializeCraterSampler();

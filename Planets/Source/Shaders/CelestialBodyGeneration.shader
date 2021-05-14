@@ -36,14 +36,17 @@ struct CraterData
 	bool hasTexture;
 };
 
-layout(binding = 2, std140) uniform Data
+layout(binding = 2, std140) uniform CraterBuffer
 {
 	CraterData craterDatas[MAX_CRATER_COUNT];
-}data;
+}craterBuffer;
 
 // vvv Perlin noise vvv
-layout(binding = 1) uniform usampler1D permutationTable;
 const int N_RANDOM_VALUES = 256;
+layout(binding = 1, std140) uniform PermutationBuffer
+{
+	int permutationTable[N_RANDOM_VALUES * 2 - 1];
+}permutationBuffer;
 
 float Smoothstep(float t)
 {
@@ -51,8 +54,7 @@ float Smoothstep(float t)
 }
 int AccessPermutationTable(int index)
 {
-	//return int(imageLoad(permutationTable, index).r);
-	return int(texelFetch(permutationTable, index, 0).r);
+	return permutationBuffer.permutationTable[index];
 }
 uint GetRandomIndex(const ivec3 location)
 {
@@ -503,8 +505,8 @@ void main()
 		// (if close enough) gets the chance to modify the vertex
 		for (int j = 0; j < nCraters; ++j)
 		{
-			const vec3 craterPosition = data.craterDatas[j].position;
-			const float randomCraterValue = data.craterDatas[j].randomValue;
+			const vec3 craterPosition = craterBuffer.craterDatas[j].position;
+			const float randomCraterValue = craterBuffer.craterDatas[j].randomValue;
 
 			// The cosine of the angle between the vertex position and the
 			// crater position, is equal to the dot product between the two
@@ -526,7 +528,7 @@ void main()
 			const float craterRadius = GetRandomCraterRadius(randomCraterValue);
 			// Only proceed to calculate the UV-coordinates if
 			// the crater should have a texture applied to it
-			if(data.craterDatas[j].hasTexture)
+			if(craterBuffer.craterDatas[j].hasTexture)
 			{
 				// The radius of the image is always three times
 				// the radius of the crater, but not greater

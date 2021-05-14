@@ -40,8 +40,11 @@ layout(binding = 4) uniform sampler2D secondNormalMap;
 layout(binding = 5) uniform sampler2D normalInterpolationTexture;
 
 // vvv Perlin noise vvv
-layout(binding = 0) uniform usampler1D permutationTable;
 const int N_RANDOM_VALUES = 256;
+layout(binding = 0, std140) uniform PermutationBuffer
+{
+	int permutationTable[N_RANDOM_VALUES * 2 - 1];
+}permutationBuffer;
 
 float Smoothstep(float t)
 {
@@ -49,8 +52,7 @@ float Smoothstep(float t)
 }
 int AccessPermutationTable(int index)
 {
-	//return int(imageLoad(permutationTable, index).r);
-	return int(texelFetch(permutationTable, index, 0).r);
+	return permutationBuffer.permutationTable[index];
 }
 uint GetRandomIndex(const ivec3 location)
 {

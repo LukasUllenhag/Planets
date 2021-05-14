@@ -73,7 +73,7 @@ private:
 
 	void InitializeVao();
 	void InitializeShaderStorageBufferObject();
-	void InitializeUniformBufferObject();
+	void InitializeUniformBufferObjects();
 	void InitializeVbo();
 
 	// The following three methods generate crater data that will get passed to
@@ -113,7 +113,8 @@ private:
 	GLuint mVao = 0;
 	GLuint mVbo = 0;
 	GLuint mShaderStorageBufferObject = 0;
-	GLuint mUniformBufferObject = 0;
+	GLuint mCraterUniformBufferObject = 0;
+	GLuint mPermutationUniformBufferObject = 0;
 
 	Vector3 mPosition;
 	float mScale = 0.0f;

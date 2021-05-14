@@ -33,7 +33,7 @@ CelestialBody::CelestialBody(const std::shared_ptr<Program> renderingProgram,
 	// The shader storage buffer object needs to be initialized
 	// before we initialize the vbo
 	InitializeShaderStorageBufferObject();
-	InitializeUniformBufferObject();
+	InitializeUniformBufferObjects();
 
 	// The vbo needs to be initialized
 	// before we initialize the vao
@@ -49,7 +49,8 @@ CelestialBody::~CelestialBody()
 	glDeleteVertexArrays(1, &mVao);
 	glDeleteBuffers(1, &mVbo);
 	glDeleteBuffers(1, &mShaderStorageBufferObject);
-	glDeleteBuffers(1, &mUniformBufferObject);
+	glDeleteBuffers(1, &mCraterUniformBufferObject);
+	glDeleteBuffers(1, &mPermutationUniformBufferObject);
 }
 
 void CelestialBody::Render(const Camera& camera, const Matrix4& projectionMatrix) const
@@ -58,12 +59,14 @@ void CelestialBody::Render(const Camera& camera, const Matrix4& projectionMatrix
 	GL(glBindVertexArray(mVao));
 
 	// Bind all the textures
-	msTextures->BindPermutationMap(0);
 	msTextures->BindTexture(1);
 	msTextures->BindCraterTexture(2);
 	msTextures->BindCraterSampler(2);
 	msTextures->BindNormalMaps(3, 4);
 	msTextures->BindNormalInterpolation(5);
+
+	// The permutation table is needed for perlin noise calculations inside the shader
+	GL(glBindBufferBase(GL_UNIFORM_BUFFER, 0, mPermutationUniformBufferObject));
 
 	BindUniforms(camera, projectionMatrix);
 
@@ -302,12 +305,12 @@ const int nCraters, const float maxCraterTextureRadius)
 	// the shader storage buffer object
 	GL(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mShaderStorageBufferObject));
 
-	// The permutation map is needed for perlin noise calculations inside the shader
-	msTextures->BindPermutationMap(1);
+	// The permutation table is needed for perlin noise calculations inside the shader
+	GL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, mPermutationUniformBufferObject));
 
 	// The uniform buffer object contains the crater data that is needed for generating
 	// the craters
-	GL(glBindBufferBase(GL_UNIFORM_BUFFER, 2, mUniformBufferObject));
+	GL(glBindBufferBase(GL_UNIFORM_BUFFER, 2, mCraterUniformBufferObject));
 
 	GL(glUniform1i(0, nCraters));
 	GL(glUniform1f(1, maxCraterTextureRadius));
@@ -391,15 +394,37 @@ void CelestialBody::InitializeShaderStorageBufferObject()
 	GL(glCreateBuffers(1, &mShaderStorageBufferObject));
 }
 
-void CelestialBody::InitializeUniformBufferObject()
+void CelestialBody::InitializeUniformBufferObjects()
 {
-	GL(glCreateBuffers(1, &mUniformBufferObject));
+	GL(glCreateBuffers(1, &mCraterUniformBufferObject));
 
 	// The buffer has to be able to hold "MAX_CRATER_COUNT" amount of "CraterData" instances.
 	// Each "CraterData" instance is aligned at a multiple of 2 * the size of a "vec4", hence
 	// we multiply by "4 * 4 * 2".
-	GL(glNamedBufferData(mUniformBufferObject, MAX_CRATER_COUNT * 4 * 4 * 2,
+	GL(glNamedBufferData(mCraterUniformBufferObject, MAX_CRATER_COUNT * 4 * 4 * 2,
 		NULL, GL_STATIC_DRAW));
+
+	// vvv Initialization of "mPermutationUniformBufferObject" vvv
+
+	GL(glCreateBuffers(1, &mPermutationUniformBufferObject));
+
+	struct Vector4AlignedInt
+	{
+		Vector4AlignedInt(const int value)
+			:
+			value(value)
+		{}
+		Vector4AlignedInt() = default;
+		int alignas(4 * 4) value = 0;
+	};
+	// We are aligning each element of the permutation table as a "vec4", to
+	// conform to the std140 storage layout
+	BasicPermutationTable<Vector4AlignedInt, 256> permutationTable;
+	// The "stride" (in memory) between each element is 4 * 4 bytes. The start of the last element
+	// is therefore "(permutationTable.Size() - 1) * 4 * 4". The total size is the start of the
+	// last element + the size of the last element, i.e, "(permutationTable.Size() - 1) * 4 * 4 + sizeof(int)"
+	GL(glNamedBufferData(mPermutationUniformBufferObject, (permutationTable.Size() - 1) * 4 * 4 + sizeof(int),
+		permutationTable.GetPointerToData(), GL_STATIC_DRAW));
 }
 
 void CelestialBody::InitializeVbo()
@@ -440,7 +465,7 @@ void CelestialBody::UpdateUniformBufferObject(const std::vector<CelestialVertex>
 
 	// Each "CraterData" instance is aligned at a multiple of 2 * the size of a "vec4", hence
 	// we multiply by "4 * 4 * 2"
-	GL(glNamedBufferData(mUniformBufferObject, uniformBufferData.size() * 4 * 4 * 2,
+	GL(glNamedBufferData(mCraterUniformBufferObject, uniformBufferData.size() * 4 * 4 * 2,
 		&uniformBufferData.front(), GL_STATIC_DRAW));
 }
 

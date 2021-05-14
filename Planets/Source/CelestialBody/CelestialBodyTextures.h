@@ -34,12 +34,10 @@ public:
 	void BindTexture(GLuint location) const;
 	void BindNormalMaps(GLuint location0, GLuint location1) const;
 	void BindNormalInterpolation(GLuint location) const;
-	void BindPermutationMap(GLuint location) const;
 	void BindCraterTexture(GLuint location) const;
 	void BindCraterSampler(GLuint location) const;
 	void BindDefaultSampler(GLuint location) const;
 private:
-	void InitializePermutationMap(const PermutationTable<256>& permutationTable);
 	void InitializeNormalInterpolation();
 	void InitializeTexture();
 	void InitializeCraterSampler();
@@ -82,10 +80,6 @@ private:
 
 	// The surface texture for the celestial body
 	GLuint mTexture = 0;
-
-	// A texture that contains a permutation map that is
-	// used for perlin noise calculations inside the shaders
-	GLuint mPermutationMap = 0;
 
 	// A texture, containing floats ranging from 0 to 1,
 	// that decides how much we should interpolate between the
