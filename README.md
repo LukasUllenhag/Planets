@@ -2,8 +2,6 @@
 ![Screenshot 0](Screenshots/0.PNG)
 
 ### Table of contents ###
-
-- [Background](#Background)
 - [Description](#Description)
 - [Screenshots](#Screenshots)
 - [Requirements](#Requirements)
@@ -13,10 +11,6 @@
 - [Controls](#Controls)
 - [Tips](#Tips)
 - [Where are the commits for the graphics framework?](#Where-are-the-commits-for-the-graphics-framework)
-
-### Background ###
-My inspiration for this project is the video below, in which Sebastian Lague generates procedural moons and planets using Unity. I wanted to try to create something similar to what he did, but instead of using an already existing game engine, I wanted to develop it from scratch using my own graphics framework.  
-https://www.youtube.com/watch?v=lctXaT9pxA0
 
 ### Description ###
 Planets is a demo that showcases procedurally generated celestial bodies. The shapes of the celestial bodies are generated inside a compute shader, for optimal performance, and are controlled by a set of parameters. In the demo, three completely different shaped celestial bodies (a planet, a moon, and an asteroid) have 
